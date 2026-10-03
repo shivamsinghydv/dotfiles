@@ -1,0 +1,359 @@
+" ============================================================================
+" ~/.vimrc — "Phosphor" theme + Apple Terminal Presets + Auto-pairs
+" ============================================================================
+
+" ----------------------------------------------------------------------------
+" Core behavior
+" ----------------------------------------------------------------------------
+set nocompatible
+filetype plugin indent on
+syntax on
+
+set encoding=utf-8
+set number relativenumber
+set cursorline
+set scrolloff=6
+set sidescrolloff=8
+set wrap linebreak
+set showmatch
+set matchtime=2
+set noerrorbells visualbell t_vb=
+set belloff=all
+set updatetime=300
+set signcolumn=yes
+set laststatus=2
+set showcmd
+set noshowmode          " custom statusline shows mode instead
+set title
+
+" Indentation
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set smartindent
+set autoindent
+
+" Search
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+if has('nvim')
+  set inccommand=nosplit
+endif
+
+" Splits & buffers
+set splitright
+set splitbelow
+set hidden
+
+" Completion / wildmenu
+set wildmenu
+set wildmode=longest:full,full
+set wildignore+=*.o,*.pyc,*.class,*/.git/*,*/node_modules/*
+
+" Persistent undo
+if has('persistent_undo')
+  silent !mkdir -p ~/.vim/undodir > /dev/null 2>&1
+  set undodir=~/.vim/undodir
+  set undofile
+endif
+
+" Color depth
+if has('termguicolors')
+  set termguicolors
+endif
+set t_Co=256
+
+" ----------------------------------------------------------------------------
+" Auto-close Brackets & Quotes
+" ----------------------------------------------------------------------------
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap { {}<Left>
+inoremap {<CR> {<CR>}<Esc>O
+inoremap " ""<Left>
+inoremap ' ''<Left>
+inoremap ` ``<Left>
+
+" ----------------------------------------------------------------------------
+" COLOR PALETTES & THEME SWITCHER
+" ----------------------------------------------------------------------------
+set background=dark
+
+" 1. Phosphor (Original Retro CRT)
+let g:theme_phosphor = {
+      \ 'bg':        ['#1C1810', 234],
+      \ 'bg_alt':     ['#262019', 235],
+      \ 'bg_select':  ['#3A3020', 237],
+      \ 'fg':         ['#E4D8B4', 223],
+      \ 'fg_dim':      ['#9C9070', 101],
+      \ 'comment':    ['#8A7F5C', 101],
+      \ 'amber':      ['#E8A33D', 214],
+      \ 'green':      ['#A8CC6C', 149],
+      \ 'cyan':       ['#6EC9C9', 80],
+      \ 'orange':     ['#D97757', 173],
+      \ 'red':        ['#E85D4C', 203],
+      \ 'purple':     ['#C9A0DC', 183],
+      \ 'linenr':     ['#6B5F42', 94],
+      \ 'linenr_cur': ['#E8A33D', 214],
+      \ }
+
+" 2. Apple Terminal: Basic (Dark)
+let g:theme_apple_basic = {
+      \ 'bg':        ['#000000', 0],
+      \ 'bg_alt':     ['#1C1C1C', 234],
+      \ 'bg_select':  ['#303030', 236],
+      \ 'fg':         ['#FFFFFF', 15],
+      \ 'fg_dim':      ['#808080', 8],
+      \ 'comment':    ['#666666', 242],
+      \ 'amber':      ['#D7A070', 179],
+      \ 'green':      ['#78CE78', 114],
+      \ 'cyan':       ['#66C2CD', 73],
+      \ 'orange':     ['#E08E6B', 173],
+      \ 'red':        ['#E56B6B', 167],
+      \ 'purple':     ['#B294BB', 139],
+      \ 'linenr':     ['#444444', 238],
+      \ 'linenr_cur': ['#FFFFFF', 15],
+      \ }
+
+" 3. Apple Terminal: Homebrew (Classic Green-Screen)
+let g:theme_apple_homebrew = {
+      \ 'bg':        ['#000000', 0],
+      \ 'bg_alt':     ['#0F1F0F', 233],
+      \ 'bg_select':  ['#1A381A', 235],
+      \ 'fg':         ['#00FF00', 10],
+      \ 'fg_dim':      ['#00AA00', 34],
+      \ 'comment':    ['#008800', 28],
+      \ 'amber':      ['#88FF00', 118],
+      \ 'green':      ['#00FF66', 48],
+      \ 'cyan':       ['#00FFCC', 50],
+      \ 'orange':     ['#66FF00', 82],
+      \ 'red':        ['#FF5555', 203],
+      \ 'purple':     ['#55FF99', 85],
+      \ 'linenr':     ['#005500', 22],
+      \ 'linenr_cur': ['#00FF00', 10],
+      \ }
+
+" 4. Apple Terminal: Ocean (Deep Teal/Blue)
+let g:theme_apple_ocean = {
+      \ 'bg':        ['#224FBC', 18],
+      \ 'bg_alt':     ['#1A3E96', 19],
+      \ 'bg_select':  ['#3362D6', 26],
+      \ 'fg':         ['#FFFFFF', 15],
+      \ 'fg_dim':      ['#99B3FF', 111],
+      \ 'comment':    ['#668CFF', 69],
+      \ 'amber':      ['#FFCC66', 221],
+      \ 'green':      ['#66FFB3', 85],
+      \ 'cyan':       ['#66FFFF', 87],
+      \ 'orange':     ['#FF9966', 209],
+      \ 'red':        ['#FF6666', 203],
+      \ 'purple':     ['#E6B8FF', 183],
+      \ 'linenr':     ['#4472E0', 62],
+      \ 'linenr_cur': ['#FFFFFF', 15],
+      \ }
+
+function! s:Hi(group, fg, bg, attr)
+  let l:cmd = 'hi ' . a:group
+  if !empty(a:fg)
+    let l:cmd .= ' guifg=' . a:fg[0] . ' ctermfg=' . a:fg[1]
+  else
+    let l:cmd .= ' guifg=NONE ctermfg=NONE'
+  endif
+  if !empty(a:bg)
+    let l:cmd .= ' guibg=' . a:bg[0] . ' ctermbg=' . a:bg[1]
+  else
+    let l:cmd .= ' guibg=NONE ctermbg=NONE'
+  endif
+  if !empty(a:attr)
+    let l:cmd .= ' gui=' . a:attr . ' cterm=' . a:attr
+  endif
+  execute l:cmd
+endfunction
+
+function! ApplyTheme(palette) abort
+  hi clear
+  if exists('syntax_on')
+    syntax reset
+  endif
+
+  let s:p = a:palette
+
+  call s:Hi('Normal',        s:p.fg,         s:p.bg,        '')
+  call s:Hi('NonText',       s:p.linenr,     s:p.bg,        '')
+  call s:Hi('EndOfBuffer',   s:p.linenr,     s:p.bg,        '')
+  call s:Hi('CursorLine',    [],             s:p.bg_alt,    'NONE')
+  call s:Hi('CursorLineNr',  s:p.linenr_cur, s:p.bg_alt,    'bold')
+  call s:Hi('LineNr',        s:p.linenr,     s:p.bg,        '')
+  call s:Hi('SignColumn',    s:p.linenr,     s:p.bg,        '')
+  call s:Hi('Visual',        [],             s:p.bg_select, '')
+  call s:Hi('Search',        s:p.bg,         s:p.amber,     'bold')
+  call s:Hi('IncSearch',     s:p.bg,         s:p.orange,    'bold')
+  call s:Hi('MatchParen',    s:p.bg,         s:p.amber,     'bold')
+  call s:Hi('Pmenu',         s:p.fg,         s:p.bg_alt,    '')
+  call s:Hi('PmenuSel',      s:p.bg,         s:p.amber,     'bold')
+  call s:Hi('PmenuSbar',     [],             s:p.bg_alt,    '')
+  call s:Hi('PmenuThumb',    [],             s:p.amber,     '')
+  call s:Hi('VertSplit',     s:p.bg_alt,     s:p.bg,        '')
+  call s:Hi('WinSeparator',  s:p.bg_alt,     s:p.bg,        '')
+  call s:Hi('ColorColumn',   [],             s:p.bg_alt,    '')
+  call s:Hi('Directory',     s:p.cyan,       [],            '')
+  call s:Hi('Title',         s:p.amber,      [],            'bold')
+  call s:Hi('ErrorMsg',      s:p.red,        s:p.bg,        'bold')
+  call s:Hi('WarningMsg',    s:p.orange,     [],            '')
+  call s:Hi('ModeMsg',       s:p.green,      [],            '')
+  call s:Hi('Question',      s:p.green,      [],            '')
+
+  " Syntax groups
+  call s:Hi('Comment',       s:p.comment,    [],            'italic')
+  call s:Hi('Constant',      s:p.orange,     [],            '')
+  call s:Hi('Number',        s:p.orange,     [],            '')
+  call s:Hi('Boolean',       s:p.orange,     [],            'bold')
+  call s:Hi('String',        s:p.green,      [],            '')
+  call s:Hi('Character',     s:p.green,      [],            '')
+  call s:Hi('Identifier',    s:p.fg,         [],            '')
+  call s:Hi('Function',      s:p.cyan,       [],            'bold')
+  call s:Hi('Statement',     s:p.amber,      [],            'bold')
+  call s:Hi('Conditional',   s:p.amber,      [],            'bold')
+  call s:Hi('Repeat',        s:p.amber,      [],            'bold')
+  call s:Hi('Label',         s:p.amber,      [],            '')
+  call s:Hi('Operator',      s:p.fg,         [],            '')
+  call s:Hi('Keyword',       s:p.amber,      [],            'bold')
+  call s:Hi('Exception',     s:p.red,        [],            'bold')
+  call s:Hi('PreProc',       s:p.purple,     [],            '')
+  call s:Hi('Include',       s:p.purple,     [],            '')
+  call s:Hi('Define',        s:p.purple,     [],            '')
+  call s:Hi('Macro',         s:p.purple,     [],            '')
+  call s:Hi('Type',          s:p.purple,     [],            'bold')
+  call s:Hi('StorageClass',  s:p.purple,     [],            '')
+  call s:Hi('Structure',     s:p.purple,     [],            '')
+  call s:Hi('Typedef',       s:p.purple,     [],            '')
+  call s:Hi('Special',       s:p.orange,     [],            '')
+  call s:Hi('SpecialChar',   s:p.orange,     [],            '')
+  call s:Hi('Delimiter',     s:p.fg_dim,     [],            '')
+  call s:Hi('Underlined',    s:p.cyan,       [],            'underline')
+  call s:Hi('Todo',          s:p.bg,         s:p.amber,     'bold')
+  call s:Hi('DiffAdd',       s:p.green,      s:p.bg_alt,    '')
+  call s:Hi('DiffChange',    s:p.amber,      s:p.bg_alt,    '')
+  call s:Hi('DiffDelete',    s:p.red,        s:p.bg_alt,    '')
+  call s:Hi('DiffText',      s:p.cyan,       s:p.bg_alt,    'bold')
+  call s:Hi('SpellBad',      s:p.red,        [],            'underline')
+  call s:Hi('SpellCap',      s:p.cyan,       [],            'underline')
+
+  " Update Dynamic Statusline Highlights
+  execute 'hi StatusMode guifg=' . s:p.bg[0] . ' guibg=' . s:p.amber[0] . ' ctermfg=' . s:p.bg[1] . ' ctermbg=' . s:p.amber[1] . ' gui=bold cterm=bold'
+  execute 'hi StatusFile guifg=' . s:p.fg[0] . ' guibg=' . s:p.bg_alt[0] . ' ctermfg=' . s:p.fg[1] . ' ctermbg=' . s:p.bg_alt[1]
+  execute 'hi StatusGit  guifg=' . s:p.green[0] . ' guibg=' . s:p.bg_alt[0] . ' ctermfg=' . s:p.green[1] . ' ctermbg=' . s:p.bg_alt[1]
+  execute 'hi StatusInfo guifg=' . s:p.cyan[0] . ' guibg=' . s:p.bg_alt[0] . ' ctermfg=' . s:p.cyan[1] . ' ctermbg=' . s:p.bg_alt[1]
+endfunction
+
+" Command to switch themes easily
+command! -nargs=1 -complete=customlist,ThemeComplete SetTheme call SwitchTheme(<f-args>)
+
+function! SwitchTheme(name) abort
+  let l:key = 'g:theme_' . a:name
+  if exists(l:key)
+    call ApplyTheme(eval(l:key))
+  else
+    echoerr "Unknown theme: " . a:name
+  endif
+endfunction
+
+function! ThemeComplete(ArgLead, L, P) abort
+  return filter(['phosphor', 'apple_basic', 'apple_homebrew', 'apple_ocean'], 'v:val =~ "^" . a:ArgLead')
+endfunction
+
+" Set default active theme
+call ApplyTheme(g:theme_phosphor)
+
+" ----------------------------------------------------------------------------
+" Custom statusline — mode + file + git branch + filetype + position
+" ----------------------------------------------------------------------------
+function! PhosphorMode() abort
+  let l:m = mode()
+  let l:map = {
+        \ 'n':      'NORMAL', 'i': 'INSERT', 'v': 'VISUAL', 'V': 'V-LINE',
+        \ "\<C-v>": 'V-BLOCK', 'R': 'REPLACE', 'c': 'COMMAND', 't': 'TERMINAL' }
+  return get(l:map, l:m, l:m)
+endfunction
+
+let b:phosphor_git_branch = ''
+
+function! PhosphorRefreshGitBranch() abort
+  if exists('*FugitiveHead')
+    let b:phosphor_git_branch = FugitiveHead()
+    return
+  endif
+  let l:branch = system('git -C ' . shellescape(expand('%:p:h')) . ' rev-parse --abbrev-ref HEAD 2>/dev/null')
+  let b:phosphor_git_branch = v:shell_error ? '' : substitute(l:branch, '\n', '', '')
+endfunction
+
+function! PhosphorGitBranch() abort
+  return get(b:, 'phosphor_git_branch', '')
+endfunction
+
+augroup PhosphorGit
+  autocmd!
+  autocmd BufEnter,BufWritePost,DirChanged * call PhosphorRefreshGitBranch()
+augroup END
+
+set statusline=
+set statusline+=%#StatusMode#\ %{PhosphorMode()}\ 
+set statusline+=%#StatusFile#\ %f\ %m%r
+set statusline+=%#StatusGit#\ %{PhosphorGitBranch()!=''?'\ ⎇\ '.PhosphorGitBranch().'\ ':''}
+set statusline+=%=
+set statusline+=%#StatusInfo#\ %y\ %{&fileencoding?&fileencoding:&encoding}\ 
+set statusline+=%#StatusMode#\ %l:%c\ %p%%\ 
+
+" ----------------------------------------------------------------------------
+" Interactive niceties
+" ----------------------------------------------------------------------------
+if &term =~ '^xterm\|tmux\|screen'
+  let &t_SI = "\<Esc>[6 q"   " insert: thin bar
+  let &t_SR = "\<Esc>[4 q"   " replace: underline
+  let &t_EI = "\<Esc>[2 q"   " normal: block
+endif
+
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_winsize = 25
+
+" ----------------------------------------------------------------------------
+" Keymaps
+" ----------------------------------------------------------------------------
+let mapleader = ' '
+
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>Q :qa!<CR>
+
+nnoremap <leader><Esc> :nohlsearch<CR>
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+nnoremap <leader>sv :vsplit<CR>
+nnoremap <leader>sh :split<CR>
+
+nnoremap <leader>bn :bnext<CR>
+nnoremap <leader>bp :bprevious<CR>
+nnoremap <leader>bd :bdelete<CR>
+
+nnoremap <leader>e :Lexplore<CR>
+
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+nnoremap <leader>rn :set relativenumber!<CR>
+
+nnoremap <leader>ve :edit $MYVIMRC<CR>
+nnoremap <leader>vr :source $MYVIMRC<CR>
